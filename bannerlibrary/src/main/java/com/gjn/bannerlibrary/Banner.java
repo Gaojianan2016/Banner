@@ -32,12 +32,16 @@ public class Banner extends FrameLayout implements ViewPager.OnPageChangeListene
 
     private List mImgItems;
     private List<String> mStringItems;
+    private int mType = Indicator.TYPE_NUM;
+    ;
     private int delayTime = 3000;
     private boolean isLoop = true;
     private LoopViewPager.onClickListener onClickListener;
     private LoopViewPager.onLongClickListener onLongClickListener;
     private boolean isShowIndicator = true;
     private BannerImageLoader imageLoader;
+    private BannerIndicatorLoader indicatorLoader;
+    private int select = 0;
 
     public Banner(@NonNull Context context) {
         this(context, null);
@@ -54,13 +58,7 @@ public class Banner extends FrameLayout implements ViewPager.OnPageChangeListene
         mIndicatorLinearLayout = view.findViewById(R.id.ll_indicator_banner);
     }
 
-    private void create(){
-        if (mStringItems != null && mImgItems != null) {
-            if (mStringItems.size() != mImgItems.size()) {
-                Log.e(TAG, "size is error. StringItems size = " + mStringItems.size() + ", ImgItems size = " + mImgItems.size());
-                return;
-            }
-        }
+    private void create() {
         if (mImgItems == null && mImgItems.size() <= 0) {
             Log.e(TAG, "items is null.");
             return;
@@ -75,40 +73,51 @@ public class Banner extends FrameLayout implements ViewPager.OnPageChangeListene
     }
 
     private void createIndicator() {
-        if (mStringItems == null) {
-            mIndicator = null;
+        if (indicatorLoader != null) {
+            loadIndicatorLoader();
         }
         if (mIndicator == null) {
-            if (mStringItems != null) {
-                mIndicator = new Indicator(getContext(), mStringItems, mIndicatorLinearLayout) {
+            mIndicator = new Indicator(getContext(), mImgItems.size(), mIndicatorLinearLayout) {
+                @Override
+                protected View createView(Context context, ViewGroup viewGroup) {
+                    return new TextView(context);
+                }
 
-                    @Override
-                    protected View createView(Context context, ViewGroup viewGroup) {
-                        return new TextView(context);
-                    }
+                @Override
+                protected View getPointView(View view, int i) {
+                    return view;
+                }
+            };
+        }
+        mIndicator.setTitles(mStringItems);
+        mIndicator.changeType(mType);
+    }
 
-                    @Override
-                    protected View getPointView(View view) {
-                        return view;
-                    }
-                };
-            }else {
-                mIndicator = new Indicator(getContext(), mImgItems.size(), mIndicatorLinearLayout) {
-                    @Override
-                    protected View createView(Context context, ViewGroup viewGroup) {
-                        return new TextView(context);
-                    }
-
-                    @Override
-                    protected View getPointView(View view) {
-                        return view;
-                    }
-                };
-                mIndicator.setType(Indicator.TYPE_NUM);
+    private void loadIndicatorLoader() {
+        if (mIndicator == null) {
+            if (indicatorLoader.getType() == Indicator.TYPE_NUM) {
+                mType = Indicator.TYPE_NUM;
+            } else if (indicatorLoader.getType() == Indicator.TYPE_TEXT) {
+                if (mStringItems.size() != mImgItems.size()) {
+                    Log.e(TAG, "size is error. type change TYPE_NUM");
+                    mType = Indicator.TYPE_NUM;
+                } else {
+                    mType = Indicator.TYPE_TEXT;
+                }
+            } else {
+                mType = Indicator.TYPE_POINT;
             }
-            mIndicator.create();
-        }else {
-            mIndicator.updataView(mImgItems.size());
+            mIndicator = new Indicator(getContext(), mImgItems.size(), mIndicatorLinearLayout) {
+                @Override
+                protected View createView(Context context, ViewGroup viewGroup) {
+                    return indicatorLoader.createView(context, viewGroup);
+                }
+
+                @Override
+                protected View getPointView(View view, int i) {
+                    return indicatorLoader.getPointView(view, i);
+                }
+            };
         }
     }
 
@@ -120,35 +129,66 @@ public class Banner extends FrameLayout implements ViewPager.OnPageChangeListene
                     imageLoader.imageLoader(context, img, imageView);
                 }
             };
-            mLoopViewPager.setDelayTime(delayTime)
-                    .setLoop(isLoop)
-                    .setOnPageChangeListener(this)
-                    .setOnClickListener(onClickListener)
-                    .setOnLongClickListener(onLongClickListener)
-                    .create();
-        }else {
-            mLoopViewPager.updataView(mImgItems);
         }
+        mLoopViewPager.setDelayTime(delayTime)
+                .setLoop(isLoop)
+                .setOnPageChangeListener(this)
+                .setOnClickListener(onClickListener)
+                .setOnLongClickListener(onLongClickListener)
+                .create();
+    }
+
+    public void start() {
+        if (!isLoop) {
+            setLoop(true);
+        }
+        mLoopViewPager.startLoop();
+    }
+
+    public void stoop() {
+        if (isLoop) {
+            setLoop(false);
+        }
+        mLoopViewPager.stopLoop();
     }
 
     public Banner setDelayTime(int delayTime) {
         this.delayTime = delayTime;
+        if (mLoopViewPager != null) {
+            mLoopViewPager.setDelayTime(delayTime);
+        }
         return this;
     }
 
     public Banner setLoop(boolean loop) {
         isLoop = loop;
+        if (mLoopViewPager != null) {
+            mLoopViewPager.setLoop(loop);
+        }
         return this;
     }
 
-    public Banner setShowIndicator(boolean showIndicator) {
-        isShowIndicator = showIndicator;
-        if (isShowIndicator) {
-            mIndicatorLinearLayout.setVisibility(VISIBLE);
-        }else {
-            mIndicatorLinearLayout.setVisibility(GONE);
+    public Banner setType(int type) {
+        this.mType = type;
+        if (mIndicator != null) {
+            mIndicator.changeType(type, mStringItems);
+            mIndicator.selectIndicator(select);
         }
         return this;
+    }
+
+    public void setIndicatorMandatory(boolean b) {
+        if (mIndicator != null) {
+            mIndicator.setMandatory(b);
+            mIndicator.updataView();
+        }
+    }
+
+    public void setScaleType(ImageView.ScaleType type) {
+        if (mLoopViewPager != null) {
+            mLoopViewPager.setScaleType(type);
+            mLoopViewPager.updataView();
+        }
     }
 
     public Banner setImageLoader(BannerImageLoader imageLoader) {
@@ -156,8 +196,56 @@ public class Banner extends FrameLayout implements ViewPager.OnPageChangeListene
         return this;
     }
 
+    public void setGravity(int gravity) {
+        if (mIndicator != null) {
+            mIndicator.setGravity(gravity);
+            mIndicator.updataView();
+        }
+    }
+
+    public Banner setIndicatorLoader(BannerIndicatorLoader indicatorLoader) {
+        this.indicatorLoader = indicatorLoader;
+        return this;
+    }
+
+    public Banner setImgItems(List imgs) {
+        mImgItems = imgs;
+        if (mLoopViewPager != null) {
+            mLoopViewPager.updataView(imgs);
+        }
+        return this;
+    }
+
+    public Banner setStringItems(List<String> strings) {
+        mStringItems = strings;
+        if (mIndicator != null) {
+            mIndicator.setTitles(strings);
+        }
+        return this;
+    }
+
+    public Banner setIndicator(Indicator indicator) {
+        mIndicator = indicator;
+        return this;
+    }
+
+    public Banner setLoopViewPager(LoopViewPager loopViewPager) {
+        mLoopViewPager = loopViewPager;
+        return this;
+    }
+
     public boolean isShowIndicator() {
         return isShowIndicator;
+    }
+
+    public Banner setShowIndicator(boolean showIndicator) {
+        isShowIndicator = showIndicator;
+        if (isShowIndicator) {
+            mIndicatorLinearLayout.setVisibility(VISIBLE);
+        } else {
+            mIndicatorLinearLayout.setVisibility(GONE);
+        }
+        return this;
     }
 
     public Banner setOnClickListener(LoopViewPager.onClickListener onClickListener) {
@@ -170,22 +258,29 @@ public class Banner extends FrameLayout implements ViewPager.OnPageChangeListene
         return this;
     }
 
-    public void updataView(){
+    public void updataView() {
         updataView(mImgItems, mStringItems);
     }
 
-    public void updataView(List imgItems){
-        if (imgItems.size() != mStringItems.size()) {
-            updataView(imgItems, null);
-        }else {
-            updataView(imgItems, mStringItems);
-        }
+    public void updataView(List imgItems) {
+        updataView(imgItems, mStringItems);
     }
 
-    public void updataView(List imgItems, List<String> stringItems){
+    public void updataView(List imgItems, List<String> stringItems) {
         this.mImgItems = imgItems;
         this.mStringItems = stringItems;
-        create();
+        select = 0;
+        if (mLoopViewPager == null || mIndicator == null) {
+            Log.d(TAG, "new create");
+            create();
+        } else {
+            if (mImgItems == null && mImgItems.size() <= 0) {
+                Log.e(TAG, "items is null.");
+                return;
+            }
+            mLoopViewPager.updataView(imgItems);
+            mIndicator.updataView(imgItems.size(), stringItems);
+        }
     }
 
     @Override
@@ -209,6 +304,7 @@ public class Banner extends FrameLayout implements ViewPager.OnPageChangeListene
 
     @Override
     public void onPageSelected(int position) {
+        select = position;
         if (mIndicator != null) {
             mIndicator.selectIndicator(position);
         }
@@ -219,7 +315,15 @@ public class Banner extends FrameLayout implements ViewPager.OnPageChangeListene
 
     }
 
-    public interface BannerImageLoader{
+    public interface BannerImageLoader {
         void imageLoader(Context context, Object img, ImageView imageView);
+    }
+
+    public interface BannerIndicatorLoader {
+        View createView(Context context, ViewGroup viewGroup);
+
+        View getPointView(View view, int i);
+
+        int getType();
     }
 }

@@ -59,45 +59,25 @@ public abstract class LoopViewPager implements ViewPager.OnPageChangeListener {
                 Object img;
                 if (i == 0) {
                     img = items.get(itemCount - 1);
-                }else if(i == itemCount + 1){
+                } else if (i == itemCount + 1) {
                     img = items.get(0);
-                }else{
-                    img = items.get( i - 1);
+                } else {
+                    img = items.get(i - 1);
                 }
-                ImageLoader(context,img,imageView);
+                ImageLoader(context, img, imageView);
                 itemViews.add(imageView);
             }
-        }else {
-            for (int i = 0; i < itemCount; i++) {
-                ImageView imageView = new ImageView(context);
-                imageView.setScaleType(scaleType);
-                Object img = items.get(i);
-                ImageLoader(context,img,imageView);
-                itemViews.add(imageView);
-            }
+        } else {
+            ImageView imageView = new ImageView(context);
+            imageView.setScaleType(scaleType);
+            Object img = items.get(0);
+            ImageLoader(context, img, imageView);
+            itemViews.add(imageView);
         }
         itemViewCount = itemViews.size();
     }
 
-    public void updataView(){
-        updataView(items);
-    }
-
-    public void updataView(List items) {
-        updataView(items,viewPager);
-    }
-
-    public void updataView(ViewPager viewPager){
-        updataView(items,viewPager);
-    }
-
-    public void updataView(List items, ViewPager viewPager){
-        this.items = items;
-        this.viewPager = viewPager;
-        create();
-    }
-
-    public void create(){
+    public void create() {
         if (items == null) {
             Log.e(TAG, "items is null.");
             return;
@@ -107,6 +87,8 @@ public abstract class LoopViewPager implements ViewPager.OnPageChangeListener {
             return;
         }
         itemCount = items.size();
+        //默认选择
+        selectPosition(0);
         //创建头尾view
         createViews();
         //设置适配器
@@ -115,11 +97,29 @@ public abstract class LoopViewPager implements ViewPager.OnPageChangeListener {
         viewPager.addOnPageChangeListener(this);
 
         if (itemViewCount > 1) {
-            viewPager.setCurrentItem(1,false);
-            if (isLoop){
+            viewPager.setCurrentItem(1, false);
+            if (isLoop) {
                 startLoop();
             }
         }
+    }
+
+    public void updataView() {
+        updataView(items);
+    }
+
+    public void updataView(List items) {
+        updataView(items, viewPager);
+    }
+
+    public void updataView(ViewPager viewPager) {
+        updataView(items, viewPager);
+    }
+
+    public void updataView(List items, ViewPager viewPager) {
+        this.items = items;
+        this.viewPager = viewPager;
+        create();
     }
 
     public void startLoop() {
@@ -127,7 +127,7 @@ public abstract class LoopViewPager implements ViewPager.OnPageChangeListener {
         loopHandler.postDelayed(task, delayTime);
     }
 
-    public void stopLoop(){
+    public void stopLoop() {
         loopHandler.removeCallbacks(task);
     }
 
@@ -149,13 +149,17 @@ public abstract class LoopViewPager implements ViewPager.OnPageChangeListener {
         return this;
     }
 
+    public boolean isLoop() {
+        return isLoop;
+    }
+
     public LoopViewPager setLoop(boolean loop) {
         isLoop = loop;
         return this;
     }
 
-    public boolean isLoop() {
-        return isLoop;
+    public void selectPosition(int position) {
+        viewPager.setCurrentItem(position, false);
     }
 
     public LoopViewPager setOnClickListener(LoopViewPager.onClickListener onClickListener) {
@@ -184,13 +188,13 @@ public abstract class LoopViewPager implements ViewPager.OnPageChangeListener {
 
     @Override
     public void onPageSelected(int position) {
-        if (getItemCount() != getItemViewCount()){
+        if (getItemViewCount() > 1) {
             //当要到头尾之前先设置指示点到相应的头尾
-            if (position == 0 ) {
+            if (position == 0) {
                 position = getItemCount() - 1;
-            }else if(position == (getItemViewCount() - 1)){
+            } else if (position == (getItemViewCount() - 1)) {
                 position = 0;
-            }else{
+            } else {
                 position--;
             }
         }
@@ -210,21 +214,21 @@ public abstract class LoopViewPager implements ViewPager.OnPageChangeListener {
         //当滑动到第一个的时候跳转到倒数第二个
         //当滑动到最后一个的时候跳转到第二个
         if (cur == 0) {
-            viewPager.setCurrentItem(count - 2,false);
+            viewPager.setCurrentItem(count - 2, false);
         } else if (cur == count - 1) {
-            viewPager.setCurrentItem(1,false);
+            viewPager.setCurrentItem(1, false);
         }
     }
 
-    public interface onClickListener{
+    public interface onClickListener {
         void onClick(View view, int position);
     }
 
-    public interface onLongClickListener{
+    public interface onLongClickListener {
         boolean onLongClick(View view, int position);
     }
 
-    private class bannerAdaper extends PagerAdapter{
+    private class bannerAdaper extends PagerAdapter {
         private List<ImageView> views;
 
         public bannerAdaper(List<ImageView> views) {
@@ -233,7 +237,7 @@ public abstract class LoopViewPager implements ViewPager.OnPageChangeListener {
 
         @Override
         public int getCount() {
-            return views == null? 0 : views.size();
+            return views == null ? 0 : views.size();
         }
 
         @Override
@@ -249,10 +253,10 @@ public abstract class LoopViewPager implements ViewPager.OnPageChangeListener {
                 @Override
                 public void onClick(View v) {
                     if (onClickListener != null) {
-                        if (itemViewCount > 1){
-                            onClickListener.onClick(v,position - 1);
-                        }else{
-                            onClickListener.onClick(v,position);
+                        if (itemViewCount > 1) {
+                            onClickListener.onClick(v, position - 1);
+                        } else {
+                            onClickListener.onClick(v, position);
                         }
                     }
                 }
@@ -262,10 +266,10 @@ public abstract class LoopViewPager implements ViewPager.OnPageChangeListener {
                 @Override
                 public boolean onLongClick(View v) {
                     if (onLongClickListener != null) {
-                        if (itemViewCount > 1){
-                            return onLongClickListener.onLongClick(v,position - 1);
-                        }else{
-                            return onLongClickListener.onLongClick(v,position);
+                        if (itemViewCount > 1) {
+                            return onLongClickListener.onLongClick(v, position - 1);
+                        } else {
+                            return onLongClickListener.onLongClick(v, position);
                         }
                     }
                     return false;
@@ -277,7 +281,13 @@ public abstract class LoopViewPager implements ViewPager.OnPageChangeListener {
 
         @Override
         public void destroyItem(ViewGroup container, int position, Object object) {
-            container.removeView(views.get(position));
+            try {
+                if (getCount() > 1) {
+                    container.removeView(views.get(position));
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "adapter remove error", e);
+            }
         }
     }
 }
