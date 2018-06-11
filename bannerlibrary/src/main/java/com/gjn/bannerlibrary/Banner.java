@@ -69,6 +69,7 @@ public class Banner extends FrameLayout implements ViewPager.OnPageChangeListene
         }
         createIndicator();
         createView();
+        mIndicator.setMandatory(true);
         setShowIndicator(isShowIndicator);
     }
 
@@ -216,6 +217,14 @@ public class Banner extends FrameLayout implements ViewPager.OnPageChangeListene
         return this;
     }
 
+    public List getItems(){
+        return mImgItems;
+    }
+
+    public Object getItem(int i){
+        return mImgItems.get(i);
+    }
+
     public Banner setStringItems(List<String> strings) {
         mStringItems = strings;
         if (mIndicator != null) {
@@ -248,13 +257,17 @@ public class Banner extends FrameLayout implements ViewPager.OnPageChangeListene
         return this;
     }
 
-    public Banner setOnClickListener(LoopViewPager.onClickListener onClickListener) {
-        this.onClickListener = onClickListener;
+    public Banner setOnItemClickListener(LoopViewPager.onClickListener onClickListener) {
+        if (mLoopViewPager != null) {
+            mLoopViewPager.setOnClickListener(onClickListener);
+        }
         return this;
     }
 
-    public Banner setOnLongClickListener(LoopViewPager.onLongClickListener onLongClickListener) {
-        this.onLongClickListener = onLongClickListener;
+    public Banner setOnItemLongClickListener(LoopViewPager.onLongClickListener onLongClickListener) {
+        if (mLoopViewPager != null) {
+            mLoopViewPager.setOnLongClickListener(onLongClickListener);
+        }
         return this;
     }
 
