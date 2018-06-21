@@ -298,13 +298,15 @@ public class Banner extends FrameLayout implements ViewPager.OnPageChangeListene
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
-        if (mLoopViewPager.isLoop() && mImgItems.size() > 1) {
-            int action = ev.getAction();
-            if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL
-                    || action == MotionEvent.ACTION_OUTSIDE) {
-                mLoopViewPager.startLoop();
-            } else if (action == MotionEvent.ACTION_DOWN) {
-                mLoopViewPager.stopLoop();
+        if (mLoopViewPager != null) {
+            if (mLoopViewPager.isLoop() && mImgItems.size() > 1) {
+                int action = ev.getAction();
+                if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL
+                        || action == MotionEvent.ACTION_OUTSIDE) {
+                    mLoopViewPager.startLoop();
+                } else if (action == MotionEvent.ACTION_DOWN) {
+                    mLoopViewPager.stopLoop();
+                }
             }
         }
         return super.dispatchTouchEvent(ev);
