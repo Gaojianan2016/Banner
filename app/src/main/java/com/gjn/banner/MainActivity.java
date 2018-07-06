@@ -7,9 +7,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.gjn.bannerlibrary.Banner;
+import com.gjn.bannerlibrary.LoopViewPager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -70,6 +72,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public int getType() {
                 return type;
+            }
+        }).setOnItemClickListener(new LoopViewPager.onClickListener() {
+            @Override
+            public void onClick(View view, int position) {
+                Toast.makeText(MainActivity.this, "点击 " + position, Toast.LENGTH_SHORT).show();
             }
         }).updataView(list, list2);
 

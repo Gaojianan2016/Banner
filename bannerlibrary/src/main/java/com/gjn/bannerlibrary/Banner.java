@@ -258,6 +258,7 @@ public class Banner extends FrameLayout implements ViewPager.OnPageChangeListene
     }
 
     public Banner setOnItemClickListener(LoopViewPager.onClickListener onClickListener) {
+        this.onClickListener = onClickListener;
         if (mLoopViewPager != null) {
             mLoopViewPager.setOnClickListener(onClickListener);
         }
@@ -265,6 +266,7 @@ public class Banner extends FrameLayout implements ViewPager.OnPageChangeListene
     }
 
     public Banner setOnItemLongClickListener(LoopViewPager.onLongClickListener onLongClickListener) {
+        this.onLongClickListener = onLongClickListener;
         if (mLoopViewPager != null) {
             mLoopViewPager.setOnLongClickListener(onLongClickListener);
         }
