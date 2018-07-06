@@ -75,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }).setOnItemClickListener(new LoopViewPager.onClickListener() {
             @Override
-            public void onClick(View view, int position) {
+            public void onClick(View view, int position, Object item) {
                 Toast.makeText(MainActivity.this, "点击 " + position, Toast.LENGTH_SHORT).show();
             }
         }).updataView(list, list2);

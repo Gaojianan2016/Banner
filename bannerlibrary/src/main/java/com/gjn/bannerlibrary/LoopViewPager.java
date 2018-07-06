@@ -221,11 +221,11 @@ public abstract class LoopViewPager implements ViewPager.OnPageChangeListener {
     }
 
     public interface onClickListener {
-        void onClick(View view, int position);
+        void onClick(View view, int position, Object item);
     }
 
     public interface onLongClickListener {
-        boolean onLongClick(View view, int position);
+        boolean onLongClick(View view, int position, Object item);
     }
 
     private class bannerAdaper extends PagerAdapter {
@@ -254,9 +254,9 @@ public abstract class LoopViewPager implements ViewPager.OnPageChangeListener {
                 public void onClick(View v) {
                     if (onClickListener != null) {
                         if (itemViewCount > 1) {
-                            onClickListener.onClick(v, position - 1);
+                            onClickListener.onClick(v, position - 1, items.get(position - 1));
                         } else {
-                            onClickListener.onClick(v, position);
+                            onClickListener.onClick(v, position, items.get(position));
                         }
                     }
                 }
@@ -267,9 +267,9 @@ public abstract class LoopViewPager implements ViewPager.OnPageChangeListener {
                 public boolean onLongClick(View v) {
                     if (onLongClickListener != null) {
                         if (itemViewCount > 1) {
-                            return onLongClickListener.onLongClick(v, position - 1);
+                            return onLongClickListener.onLongClick(v, position - 1, items.get(position - 1));
                         } else {
-                            return onLongClickListener.onLongClick(v, position);
+                            return onLongClickListener.onLongClick(v, position, items.get(position));
                         }
                     }
                     return false;
