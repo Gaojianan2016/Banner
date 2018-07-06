@@ -18,7 +18,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    int type = 1;
+    int type = 0;
     private Banner banner;
     private List<String> list;
     private List<String> list2;
@@ -56,8 +56,10 @@ public class MainActivity extends AppCompatActivity {
                     return LayoutInflater.from(context).inflate(R.layout.img, viewGroup, false);
                 } else if (type == 1) {
                     return LayoutInflater.from(context).inflate(R.layout.text, viewGroup, false);
-                } else {
+                }else if (type == 2) {
                     return LayoutInflater.from(context).inflate(R.layout.layout, viewGroup, false);
+                } else {
+                    return LayoutInflater.from(context).inflate(R.layout.img2, viewGroup, false);
                 }
             }
 
@@ -71,6 +73,9 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public int getType() {
+                if (type == 3) {
+                    return 0;
+                }
                 return type;
             }
         }).setOnItemClickListener(new LoopViewPager.onClickListener() {
@@ -78,7 +83,9 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view, int position, Object item) {
                 Toast.makeText(MainActivity.this, "点击 " + position, Toast.LENGTH_SHORT).show();
             }
-        }).updataView(list, list2);
+        })
+        .setIndicatorMandatory(false)
+        .updataView(list, list2);
 
         banner.setScaleType(ImageView.ScaleType.FIT_CENTER);
 
@@ -86,10 +93,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 type++;
-                if (type > 2) {
+                if (type > 3) {
                     type = 0;
                 }
-                banner.setType(type);
+                if (type == 3) {
+                    banner.setType(0);
+                }else {
+                    banner.setType(type);
+                }
             }
         });
         findViewById(R.id.button2).setOnClickListener(new View.OnClickListener() {

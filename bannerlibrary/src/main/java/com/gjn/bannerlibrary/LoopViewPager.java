@@ -97,7 +97,7 @@ public abstract class LoopViewPager implements ViewPager.OnPageChangeListener {
         viewPager.addOnPageChangeListener(this);
 
         if (itemViewCount > 1) {
-            viewPager.setCurrentItem(1, false);
+            selectPosition(1);
             if (isLoop) {
                 startLoop();
             }

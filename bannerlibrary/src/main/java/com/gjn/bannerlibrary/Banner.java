@@ -29,11 +29,12 @@ public class Banner extends FrameLayout implements ViewPager.OnPageChangeListene
     private LinearLayout mIndicatorLinearLayout;
     private LoopViewPager mLoopViewPager;
     private Indicator mIndicator;
+    private boolean isMandatory = true;
 
     private List mImgItems;
     private List<String> mStringItems;
     private int mType = Indicator.TYPE_NUM;
-    ;
+
     private int delayTime = 3000;
     private boolean isLoop = true;
     private LoopViewPager.onClickListener onClickListener;
@@ -69,7 +70,6 @@ public class Banner extends FrameLayout implements ViewPager.OnPageChangeListene
         }
         createIndicator();
         createView();
-        mIndicator.setMandatory(true);
         setShowIndicator(isShowIndicator);
     }
 
@@ -91,6 +91,7 @@ public class Banner extends FrameLayout implements ViewPager.OnPageChangeListene
             };
         }
         mIndicator.setTitles(mStringItems);
+        mIndicator.setMandatory(isMandatory);
         mIndicator.changeType(mType);
     }
 
@@ -178,11 +179,13 @@ public class Banner extends FrameLayout implements ViewPager.OnPageChangeListene
         return this;
     }
 
-    public void setIndicatorMandatory(boolean b) {
+    public Banner setIndicatorMandatory(boolean b) {
+        isMandatory = b;
         if (mIndicator != null) {
             mIndicator.setMandatory(b);
             mIndicator.updataView();
         }
+        return this;
     }
 
     public void setScaleType(ImageView.ScaleType type) {
