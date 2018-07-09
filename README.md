@@ -13,8 +13,8 @@ allprojects {
 
 
 dependencies {
-    implementation 'com.github.Gaojianan2016:Banner:1.0.5'
-    implementation 'com.github.Gaojianan2016:IndicatorLayout:1.0.7'
+    implementation 'com.github.Gaojianan2016:Banner:1.0.6'
+    implementation 'com.github.Gaojianan2016:IndicatorLayout:1.0.8'
 }
 ```
 

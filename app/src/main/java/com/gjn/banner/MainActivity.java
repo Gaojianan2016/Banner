@@ -1,11 +1,10 @@
 package com.gjn.banner;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -49,43 +48,13 @@ public class MainActivity extends AppCompatActivity {
             public void imageLoader(Context context, Object img, ImageView imageView) {
                 Glide.with(context).load(img).into(imageView);
             }
-        }).setIndicatorLoader(new Banner.BannerIndicatorLoader() {
-            @Override
-            public View createView(Context context, ViewGroup viewGroup) {
-                if (type == 0) {
-                    return LayoutInflater.from(context).inflate(R.layout.img, viewGroup, false);
-                } else if (type == 1) {
-                    return LayoutInflater.from(context).inflate(R.layout.text, viewGroup, false);
-                }else if (type == 2) {
-                    return LayoutInflater.from(context).inflate(R.layout.layout, viewGroup, false);
-                } else {
-                    return LayoutInflater.from(context).inflate(R.layout.img2, viewGroup, false);
-                }
-            }
-
-            @Override
-            public View getPointView(View view, int i) {
-                if (type == 2) {
-                    return view.findViewById(R.id.tv);
-                }
-                return view;
-            }
-
-            @Override
-            public int getType() {
-                if (type == 3) {
-                    return 0;
-                }
-                return type;
-            }
         }).setOnItemClickListener(new LoopViewPager.onClickListener() {
             @Override
             public void onClick(View view, int position, Object item) {
                 Toast.makeText(MainActivity.this, "点击 " + position, Toast.LENGTH_SHORT).show();
             }
-        })
-        .setIndicatorMandatory(false)
-        .updataView(list, list2);
+        }).setIndicatorMandatory(false)
+                .updataView(list, list2);
 
         banner.setScaleType(ImageView.ScaleType.FIT_CENTER);
 
@@ -96,10 +65,23 @@ public class MainActivity extends AppCompatActivity {
                 if (type > 3) {
                     type = 0;
                 }
-                if (type == 3) {
-                    banner.setType(0);
-                }else {
-                    banner.setType(type);
+                switch (type) {
+                    case 0:
+                        banner.setIndicatorLoader(Banner.defaultImgIndicator(R.drawable.select));
+                        banner.setType(0);
+                        break;
+                    case 1:
+                        banner.setIndicatorLoader(Banner.defaultNumIndicator(0, Color.WHITE));
+                        banner.setType(1);
+                        break;
+                    case 2:
+                        banner.setIndicatorLoader(Banner.defaultTextIndicator(R.drawable.bg, Color.WHITE));
+                        banner.setType(2);
+                        break;
+                    case 3:
+                        banner.setIndicatorLoader(Banner.defaultImgIndicator(R.mipmap.homepage_banner_point02, R.mipmap.homepage_banner_point01));
+                        banner.setType(0);
+                        break;
                 }
             }
         });

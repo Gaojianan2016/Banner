@@ -30,7 +30,6 @@ public class Banner extends FrameLayout implements ViewPager.OnPageChangeListene
     private LoopViewPager mLoopViewPager;
     private Indicator mIndicator;
     private boolean isMandatory = true;
-
     private List mImgItems;
     private List<String> mStringItems;
     private int mType = Indicator.TYPE_NUM;
@@ -41,7 +40,7 @@ public class Banner extends FrameLayout implements ViewPager.OnPageChangeListene
     private LoopViewPager.onLongClickListener onLongClickListener;
     private boolean isShowIndicator = true;
     private BannerImageLoader imageLoader;
-    private BannerIndicatorLoader indicatorLoader;
+    private BannerPointIndicatorLoader indicatorLoader;
     private int select = 0;
 
     public Banner(@NonNull Context context) {
@@ -59,6 +58,144 @@ public class Banner extends FrameLayout implements ViewPager.OnPageChangeListene
         mIndicatorLinearLayout = view.findViewById(R.id.ll_indicator_banner);
     }
 
+    public static BannerPointIndicatorLoader defaultImgIndicator(final int bg_resId) {
+        return new BannerPointIndicatorLoader() {
+            @Override
+            public int getNormol() {
+                return 0;
+            }
+
+            @Override
+            public int getSelect() {
+                return 0;
+            }
+
+            @Override
+            public View createView(Context context, ViewGroup viewGroup) {
+                ImageView imageView = new ImageView(context);
+                if (bg_resId != 0) {
+                    imageView.setBackgroundResource(bg_resId);
+                }
+                return imageView;
+            }
+
+            @Override
+            public View getPointView(View view, int i) {
+                return view;
+            }
+
+            @Override
+            public int getType() {
+                return Indicator.TYPE_POINT;
+            }
+        };
+    }
+
+    public static BannerPointIndicatorLoader defaultImgIndicator(final int bg_normal_resId, final int bg_select_resId) {
+        return new BannerPointIndicatorLoader() {
+            @Override
+            public int getNormol() {
+                return bg_normal_resId;
+            }
+
+            @Override
+            public int getSelect() {
+                return bg_select_resId;
+            }
+
+            @Override
+            public View createView(Context context, ViewGroup viewGroup) {
+                ImageView imageView = new ImageView(context);
+                if (bg_normal_resId != 0) {
+                    imageView.setBackgroundResource(bg_normal_resId);
+                }
+                return imageView;
+            }
+
+            @Override
+            public View getPointView(View view, int i) {
+                return view;
+            }
+
+            @Override
+            public int getType() {
+                return Indicator.TYPE_POINT;
+            }
+        };
+    }
+
+    public static BannerPointIndicatorLoader defaultNumIndicator(final int bg_resId, final int color_resId) {
+        return new BannerPointIndicatorLoader() {
+            @Override
+            public int getNormol() {
+                return 0;
+            }
+
+            @Override
+            public int getSelect() {
+                return 0;
+            }
+
+            @Override
+            public View createView(Context context, ViewGroup viewGroup) {
+                TextView textView = new TextView(context);
+                if (color_resId != 0) {
+                    textView.setTextColor(color_resId);
+                }
+                if (bg_resId != 0) {
+                    textView.setBackgroundResource(bg_resId);
+                }
+                return textView;
+            }
+
+            @Override
+            public View getPointView(View view, int i) {
+                return view;
+            }
+
+            @Override
+            public int getType() {
+                return Indicator.TYPE_NUM;
+            }
+        };
+    }
+
+    public static BannerPointIndicatorLoader defaultTextIndicator(final int bg_resId, final int color_resId) {
+        return new BannerPointIndicatorLoader() {
+            @Override
+            public int getNormol() {
+                return 0;
+            }
+
+            @Override
+            public int getSelect() {
+                return 0;
+            }
+
+            @Override
+            public View createView(Context context, ViewGroup viewGroup) {
+                TextView textView = new TextView(context);
+                if (color_resId != 0) {
+                    textView.setTextColor(color_resId);
+                }
+                if (bg_resId != 0) {
+                    textView.setBackgroundResource(bg_resId);
+                }
+                return textView;
+            }
+
+            @Override
+            public View getPointView(View view, int i) {
+                return view;
+            }
+
+            @Override
+            public int getType() {
+                return Indicator.TYPE_TEXT;
+            }
+        };
+    }
+
     private void create() {
         if (mImgItems == null && mImgItems.size() <= 0) {
             Log.e(TAG, "items is null.");
@@ -74,21 +211,11 @@ public class Banner extends FrameLayout implements ViewPager.OnPageChangeListene
     }
 
     private void createIndicator() {
-        if (indicatorLoader != null) {
-            loadIndicatorLoader();
+        if (indicatorLoader == null) {
+            indicatorLoader = defaultNumIndicator(0, 0);
         }
         if (mIndicator == null) {
-            mIndicator = new Indicator(getContext(), mImgItems.size(), mIndicatorLinearLayout) {
-                @Override
-                protected View createView(Context context, ViewGroup viewGroup) {
-                    return new TextView(context);
-                }
-
-                @Override
-                protected View getPointView(View view, int i) {
-                    return view;
-                }
-            };
+            loadIndicatorLoader();
         }
         mIndicator.setTitles(mStringItems);
         mIndicator.setMandatory(isMandatory);
@@ -96,31 +223,30 @@ public class Banner extends FrameLayout implements ViewPager.OnPageChangeListene
     }
 
     private void loadIndicatorLoader() {
-        if (mIndicator == null) {
-            if (indicatorLoader.getType() == Indicator.TYPE_NUM) {
+        if (indicatorLoader.getType() == Indicator.TYPE_NUM) {
+            mType = Indicator.TYPE_NUM;
+        } else if (indicatorLoader.getType() == Indicator.TYPE_TEXT) {
+            if (mStringItems.size() != mImgItems.size()) {
+                Log.e(TAG, "size is error. type change TYPE_NUM");
                 mType = Indicator.TYPE_NUM;
-            } else if (indicatorLoader.getType() == Indicator.TYPE_TEXT) {
-                if (mStringItems.size() != mImgItems.size()) {
-                    Log.e(TAG, "size is error. type change TYPE_NUM");
-                    mType = Indicator.TYPE_NUM;
-                } else {
-                    mType = Indicator.TYPE_TEXT;
-                }
             } else {
-                mType = Indicator.TYPE_POINT;
+                mType = Indicator.TYPE_TEXT;
             }
-            mIndicator = new Indicator(getContext(), mImgItems.size(), mIndicatorLinearLayout) {
-                @Override
-                protected View createView(Context context, ViewGroup viewGroup) {
-                    return indicatorLoader.createView(context, viewGroup);
-                }
-
-                @Override
-                protected View getPointView(View view, int i) {
-                    return indicatorLoader.getPointView(view, i);
-                }
-            };
+        } else {
+            mType = Indicator.TYPE_POINT;
         }
+        mIndicator = new Indicator(getContext(), mImgItems.size(), mIndicatorLinearLayout) {
+            @Override
+            protected View createView(Context context, ViewGroup viewGroup) {
+                return indicatorLoader.createView(context, viewGroup);
+            }
+
+            @Override
+            protected View getPointView(View view, int i) {
+                return indicatorLoader.getPointView(view, i);
+            }
+        };
+        mIndicator.setImgState(indicatorLoader.getNormol(), indicatorLoader.getSelect());
     }
 
     private void createView() {
@@ -144,14 +270,18 @@ public class Banner extends FrameLayout implements ViewPager.OnPageChangeListene
         if (!isLoop) {
             setLoop(true);
         }
-        mLoopViewPager.startLoop();
+        if (mLoopViewPager != null) {
+            mLoopViewPager.startLoop();
+        }
     }
 
     public void stoop() {
         if (isLoop) {
             setLoop(false);
         }
-        mLoopViewPager.stopLoop();
+        if (mLoopViewPager != null) {
+            mLoopViewPager.stopLoop();
+        }
     }
 
     public Banner setDelayTime(int delayTime) {
@@ -173,6 +303,7 @@ public class Banner extends FrameLayout implements ViewPager.OnPageChangeListene
     public Banner setType(int type) {
         this.mType = type;
         if (mIndicator != null) {
+            mIndicator.setImgState(indicatorLoader.getNormol(), indicatorLoader.getSelect());
             mIndicator.changeType(type, mStringItems);
             mIndicator.selectIndicator(select);
         }
@@ -195,6 +326,13 @@ public class Banner extends FrameLayout implements ViewPager.OnPageChangeListene
         }
     }
 
+    public void setImgState(int normalImg, int selectImg) {
+        if (mIndicator != null) {
+            mIndicator.setImgState(normalImg, selectImg);
+            mIndicator.updataView();
+        }
+    }
+
     public Banner setImageLoader(BannerImageLoader imageLoader) {
         this.imageLoader = imageLoader;
         return this;
@@ -207,7 +345,7 @@ public class Banner extends FrameLayout implements ViewPager.OnPageChangeListene
         }
     }
 
-    public Banner setIndicatorLoader(BannerIndicatorLoader indicatorLoader) {
+    public Banner setIndicatorLoader(BannerPointIndicatorLoader indicatorLoader) {
         this.indicatorLoader = indicatorLoader;
         return this;
     }
@@ -220,11 +358,11 @@ public class Banner extends FrameLayout implements ViewPager.OnPageChangeListene
         return this;
     }
 
-    public List getItems(){
+    public List getItems() {
         return mImgItems;
     }
 
-    public Object getItem(int i){
+    public Object getItem(int i) {
         return mImgItems.get(i);
     }
 
@@ -292,11 +430,12 @@ public class Banner extends FrameLayout implements ViewPager.OnPageChangeListene
             Log.d(TAG, "new create");
             create();
         } else {
-            if (mImgItems == null && mImgItems.size() <= 0) {
+            if (mImgItems == null || mImgItems.size() == 0) {
                 Log.e(TAG, "items is null.");
                 return;
             }
             mLoopViewPager.updataView(imgItems);
+            mIndicator.setImgState(indicatorLoader.getNormol(), indicatorLoader.getSelect());
             mIndicator.updataView(imgItems.size(), stringItems);
         }
     }
@@ -339,11 +478,15 @@ public class Banner extends FrameLayout implements ViewPager.OnPageChangeListene
         void imageLoader(Context context, Object img, ImageView imageView);
     }
 
-    public interface BannerIndicatorLoader {
+    public interface BannerPointIndicatorLoader {
         View createView(Context context, ViewGroup viewGroup);
 
         View getPointView(View view, int i);
 
         int getType();
+
+        int getNormol();
+
+        int getSelect();
     }
 }

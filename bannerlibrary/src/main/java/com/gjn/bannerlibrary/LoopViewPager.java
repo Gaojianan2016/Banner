@@ -2,6 +2,7 @@ package com.gjn.bannerlibrary;
 
 import android.content.Context;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
@@ -96,6 +97,8 @@ public abstract class LoopViewPager implements ViewPager.OnPageChangeListener {
         viewPager.setAdapter(adaper);
         viewPager.addOnPageChangeListener(this);
 
+        Log.d(TAG, "bannerAdaper size = " + adaper.getCount());
+
         if (itemViewCount > 1) {
             selectPosition(1);
             if (isLoop) {
@@ -129,6 +132,12 @@ public abstract class LoopViewPager implements ViewPager.OnPageChangeListener {
 
     public void stopLoop() {
         loopHandler.removeCallbacks(task);
+    }
+
+    public void setOffscreenPageLimit(int limit) {
+        if (viewPager != null) {
+            viewPager.setOffscreenPageLimit(limit);
+        }
     }
 
     public int getItemViewCount() {
@@ -231,7 +240,7 @@ public abstract class LoopViewPager implements ViewPager.OnPageChangeListener {
     private class bannerAdaper extends PagerAdapter {
         private List<ImageView> views;
 
-        public bannerAdaper(List<ImageView> views) {
+        bannerAdaper(List<ImageView> views) {
             this.views = views;
         }
 
@@ -241,12 +250,14 @@ public abstract class LoopViewPager implements ViewPager.OnPageChangeListener {
         }
 
         @Override
-        public boolean isViewFromObject(View view, Object object) {
+        public boolean isViewFromObject(@NonNull View view, @NonNull Object object) {
             return view == object;
         }
 
+
+        @NonNull
         @Override
-        public Object instantiateItem(ViewGroup container, final int position) {
+        public Object instantiateItem(@NonNull ViewGroup container, final int position) {
             View view = views.get(position);
             //点击事件
             view.setOnClickListener(new View.OnClickListener() {
@@ -280,7 +291,7 @@ public abstract class LoopViewPager implements ViewPager.OnPageChangeListener {
         }
 
         @Override
-        public void destroyItem(ViewGroup container, int position, Object object) {
+        public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
             try {
                 if (getCount() > 1) {
                     container.removeView(views.get(position));
