@@ -17,14 +17,20 @@ import android.widget.TextView;
 
 import com.gjn.indicatorlibrary.Indicator;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by gjn on 2018/6/1.
+ * @author gjn
+ * @time 2018/6/1 11:39
  */
 
 public class Banner extends FrameLayout implements ViewPager.OnPageChangeListener {
     private static final String TAG = "Banner";
+    private static final int MARGIN = 50;
+    private static final int PAGE_MARGIN = 20;
+
+    private FrameLayout mFrameLayout;
     private ViewPager mViewPager;
     private LinearLayout mIndicatorLinearLayout;
     private LoopViewPager mLoopViewPager;
@@ -33,6 +39,7 @@ public class Banner extends FrameLayout implements ViewPager.OnPageChangeListene
     private List mImgItems;
     private List<String> mStringItems;
     private int mType = Indicator.TYPE_NUM;
+    private int mLimit = 3;
 
     private int delayTime = 3000;
     private boolean isLoop = true;
@@ -54,11 +61,12 @@ public class Banner extends FrameLayout implements ViewPager.OnPageChangeListene
     public Banner(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         View view = LayoutInflater.from(context).inflate(R.layout.banner, this, true);
+        mFrameLayout = view.findViewById(R.id.fl_banner);
         mViewPager = view.findViewById(R.id.vp_banner);
         mIndicatorLinearLayout = view.findViewById(R.id.ll_indicator_banner);
     }
 
-    public static BannerPointIndicatorLoader defaultImgIndicator(final int bg_resId) {
+    public static BannerPointIndicatorLoader defaultImgIndicator(final int bgResid) {
         return new BannerPointIndicatorLoader() {
             @Override
             public int getNormol() {
@@ -73,8 +81,8 @@ public class Banner extends FrameLayout implements ViewPager.OnPageChangeListene
             @Override
             public View createView(Context context, ViewGroup viewGroup) {
                 ImageView imageView = new ImageView(context);
-                if (bg_resId != 0) {
-                    imageView.setBackgroundResource(bg_resId);
+                if (bgResid != 0) {
+                    imageView.setBackgroundResource(bgResid);
                 }
                 return imageView;
             }
@@ -91,23 +99,23 @@ public class Banner extends FrameLayout implements ViewPager.OnPageChangeListene
         };
     }
 
-    public static BannerPointIndicatorLoader defaultImgIndicator(final int bg_normal_resId, final int bg_select_resId) {
+    public static BannerPointIndicatorLoader defaultImgIndicator(final int bgNormalResid, final int bgSelectResid) {
         return new BannerPointIndicatorLoader() {
             @Override
             public int getNormol() {
-                return bg_normal_resId;
+                return bgNormalResid;
             }
 
             @Override
             public int getSelect() {
-                return bg_select_resId;
+                return bgSelectResid;
             }
 
             @Override
             public View createView(Context context, ViewGroup viewGroup) {
                 ImageView imageView = new ImageView(context);
-                if (bg_normal_resId != 0) {
-                    imageView.setBackgroundResource(bg_normal_resId);
+                if (bgNormalResid != 0) {
+                    imageView.setBackgroundResource(bgNormalResid);
                 }
                 return imageView;
             }
@@ -124,7 +132,7 @@ public class Banner extends FrameLayout implements ViewPager.OnPageChangeListene
         };
     }
 
-    public static BannerPointIndicatorLoader defaultNumIndicator(final int bg_resId, final int color_resId) {
+    public static BannerPointIndicatorLoader defaultNumIndicator(final int bgResid, final int colorResid) {
         return new BannerPointIndicatorLoader() {
             @Override
             public int getNormol() {
@@ -139,11 +147,11 @@ public class Banner extends FrameLayout implements ViewPager.OnPageChangeListene
             @Override
             public View createView(Context context, ViewGroup viewGroup) {
                 TextView textView = new TextView(context);
-                if (color_resId != 0) {
-                    textView.setTextColor(color_resId);
+                if (colorResid != 0) {
+                    textView.setTextColor(colorResid);
                 }
-                if (bg_resId != 0) {
-                    textView.setBackgroundResource(bg_resId);
+                if (bgResid != 0) {
+                    textView.setBackgroundResource(bgResid);
                 }
                 return textView;
             }
@@ -160,7 +168,7 @@ public class Banner extends FrameLayout implements ViewPager.OnPageChangeListene
         };
     }
 
-    public static BannerPointIndicatorLoader defaultTextIndicator(final int bg_resId, final int color_resId) {
+    public static BannerPointIndicatorLoader defaultTextIndicator(final int bgResid, final int colorResid) {
         return new BannerPointIndicatorLoader() {
             @Override
             public int getNormol() {
@@ -175,11 +183,11 @@ public class Banner extends FrameLayout implements ViewPager.OnPageChangeListene
             @Override
             public View createView(Context context, ViewGroup viewGroup) {
                 TextView textView = new TextView(context);
-                if (color_resId != 0) {
-                    textView.setTextColor(color_resId);
+                if (colorResid != 0) {
+                    textView.setTextColor(colorResid);
                 }
-                if (bg_resId != 0) {
-                    textView.setBackgroundResource(bg_resId);
+                if (bgResid != 0) {
+                    textView.setBackgroundResource(bgResid);
                 }
                 return textView;
             }
@@ -197,7 +205,7 @@ public class Banner extends FrameLayout implements ViewPager.OnPageChangeListene
     }
 
     private void create() {
-        if (mImgItems == null && mImgItems.size() <= 0) {
+        if (mImgItems == null || mImgItems.size() <= 0) {
             Log.e(TAG, "items is null.");
             return;
         }
@@ -227,7 +235,7 @@ public class Banner extends FrameLayout implements ViewPager.OnPageChangeListene
             mType = Indicator.TYPE_NUM;
         } else if (indicatorLoader.getType() == Indicator.TYPE_TEXT) {
             if (mStringItems.size() != mImgItems.size()) {
-                Log.e(TAG, "size is error. type change TYPE_NUM");
+                Log.w(TAG, "size is error. type change TYPE_NUM");
                 mType = Indicator.TYPE_NUM;
             } else {
                 mType = Indicator.TYPE_TEXT;
@@ -259,11 +267,105 @@ public class Banner extends FrameLayout implements ViewPager.OnPageChangeListene
             };
         }
         mLoopViewPager.setDelayTime(delayTime)
+                .setOffscreenPageLimit(mLimit)
                 .setLoop(isLoop)
                 .setOnPageChangeListener(this)
                 .setOnClickListener(onClickListener)
                 .setOnLongClickListener(onLongClickListener)
                 .create();
+    }
+
+    public Banner setIndicatorType(int type) {
+        this.mType = type;
+        if (mIndicator != null) {
+            mIndicator.setImgState(indicatorLoader.getNormol(), indicatorLoader.getSelect());
+            mIndicator.changeType(type, mStringItems);
+            mIndicator.selectIndicator(select);
+        }
+        return this;
+    }
+
+    public Banner setIndicatorMandatory(boolean mandatory) {
+        isMandatory = mandatory;
+        if (mIndicator != null) {
+            mIndicator.setMandatory(mandatory);
+            mIndicator.updataView();
+        }
+        return this;
+    }
+
+    public void setIndicatorImgState(int normalImg, int selectImg) {
+        if (mIndicator != null) {
+            mIndicator.setImgState(normalImg, selectImg);
+            mIndicator.updataView();
+        }
+    }
+
+    public void setIndicatorGravity(int gravity) {
+        if (mIndicator != null) {
+            mIndicator.setGravity(gravity);
+            mIndicator.updataView();
+        }
+    }
+
+    public Banner setIndicatorStringItems(List<String> strings) {
+        mStringItems = strings == null ? new ArrayList<String>() : strings;
+        if (mIndicator != null) {
+            mIndicator.setTitles(strings);
+        }
+        return this;
+    }
+
+    public boolean isShowIndicator() {
+        return isShowIndicator;
+    }
+
+    public Banner setShowIndicator(boolean showIndicator) {
+        isShowIndicator = showIndicator;
+        if (isShowIndicator) {
+            mIndicatorLinearLayout.setVisibility(VISIBLE);
+        } else {
+            mIndicatorLinearLayout.setVisibility(GONE);
+        }
+        return this;
+    }
+
+    public List getItems() {
+        return mImgItems;
+    }
+
+    public int getItemCount() {
+        return mImgItems.size();
+    }
+
+    public Object getItem(int i) {
+        return mImgItems.get(i);
+    }
+
+    public LinearLayout getIndicatorLinearLayout() {
+        return mIndicatorLinearLayout;
+    }
+
+    public ViewPager getViewPager() {
+        return mViewPager;
+    }
+
+    public LoopViewPager getLoopViewPager() {
+        return mLoopViewPager;
+    }
+
+    public FrameLayout getFrameLayout() {
+        return mFrameLayout;
+    }
+
+    public Banner setImageLoader(BannerImageLoader imageLoader) {
+        this.imageLoader = imageLoader;
+        return this;
+    }
+
+    public Banner setIndicatorLoader(BannerPointIndicatorLoader indicatorLoader) {
+        this.indicatorLoader = indicatorLoader;
+        return this;
     }
 
     public void start() {
@@ -275,7 +377,7 @@ public class Banner extends FrameLayout implements ViewPager.OnPageChangeListene
         }
     }
 
-    public void stoop() {
+    public void stop() {
         if (isLoop) {
             setLoop(false);
         }
@@ -300,100 +402,18 @@ public class Banner extends FrameLayout implements ViewPager.OnPageChangeListene
         return this;
     }
 
-    public Banner setType(int type) {
-        this.mType = type;
-        if (mIndicator != null) {
-            mIndicator.setImgState(indicatorLoader.getNormol(), indicatorLoader.getSelect());
-            mIndicator.changeType(type, mStringItems);
-            mIndicator.selectIndicator(select);
-        }
-        return this;
-    }
-
-    public Banner setIndicatorMandatory(boolean b) {
-        isMandatory = b;
-        if (mIndicator != null) {
-            mIndicator.setMandatory(b);
-            mIndicator.updataView();
-        }
-        return this;
-    }
-
-    public void setScaleType(ImageView.ScaleType type) {
-        if (mLoopViewPager != null) {
-            mLoopViewPager.setScaleType(type);
-            mLoopViewPager.updataView();
-        }
-    }
-
-    public void setImgState(int normalImg, int selectImg) {
-        if (mIndicator != null) {
-            mIndicator.setImgState(normalImg, selectImg);
-            mIndicator.updataView();
-        }
-    }
-
-    public Banner setImageLoader(BannerImageLoader imageLoader) {
-        this.imageLoader = imageLoader;
-        return this;
-    }
-
-    public void setGravity(int gravity) {
-        if (mIndicator != null) {
-            mIndicator.setGravity(gravity);
-            mIndicator.updataView();
-        }
-    }
-
-    public Banner setIndicatorLoader(BannerPointIndicatorLoader indicatorLoader) {
-        this.indicatorLoader = indicatorLoader;
-        return this;
-    }
-
     public Banner setImgItems(List imgs) {
-        mImgItems = imgs;
+        mImgItems = imgs == null ? new ArrayList() : imgs;
         if (mLoopViewPager != null) {
             mLoopViewPager.updataView(imgs);
         }
         return this;
     }
 
-    public List getItems() {
-        return mImgItems;
-    }
-
-    public Object getItem(int i) {
-        return mImgItems.get(i);
-    }
-
-    public Banner setStringItems(List<String> strings) {
-        mStringItems = strings;
-        if (mIndicator != null) {
-            mIndicator.setTitles(strings);
-        }
-        return this;
-    }
-
-    public Banner setIndicator(Indicator indicator) {
-        mIndicator = indicator;
-        return this;
-    }
-
-    public Banner setLoopViewPager(LoopViewPager loopViewPager) {
-        mLoopViewPager = loopViewPager;
-        return this;
-    }
-
-    public boolean isShowIndicator() {
-        return isShowIndicator;
-    }
-
-    public Banner setShowIndicator(boolean showIndicator) {
-        isShowIndicator = showIndicator;
-        if (isShowIndicator) {
-            mIndicatorLinearLayout.setVisibility(VISIBLE);
-        } else {
-            mIndicatorLinearLayout.setVisibility(GONE);
+    public Banner setViewPagerLimit(int limit) {
+        this.mLimit = limit;
+        if (mLoopViewPager != null) {
+            mLoopViewPager.setOffscreenPageLimit(limit);
         }
         return this;
     }
@@ -414,6 +434,38 @@ public class Banner extends FrameLayout implements ViewPager.OnPageChangeListene
         return this;
     }
 
+    public void setScaleType(ImageView.ScaleType type) {
+        if (mLoopViewPager != null) {
+            mLoopViewPager.setScaleType(type);
+            mLoopViewPager.updataView();
+        }
+    }
+
+    public void setPageClip(boolean clip) {
+        setPageClip(clip, PAGE_MARGIN, MARGIN);
+    }
+
+    public void setPageClip(boolean clip, int pageMargin, int margin) {
+        mFrameLayout.setClipChildren(!clip);
+        mViewPager.setClipChildren(!clip);
+        int width = (int) (getResources().getDisplayMetrics().density * margin);
+        FrameLayout.LayoutParams params = (LayoutParams) mViewPager.getLayoutParams();
+        if (clip) {
+            mViewPager.setPageMargin(pageMargin);
+            params.setMargins(width, 0, width, 0);
+        } else {
+            mViewPager.setPageMargin(0);
+            params.setMargins(0, 0, 0, 0);
+        }
+    }
+
+    public void changeItemView(int itemViewId, LoopViewPager.ChangeItemView changeItemView) {
+        if (mLoopViewPager != null) {
+            mLoopViewPager.setChangeItemView(itemViewId, changeItemView);
+            mLoopViewPager.updataView();
+        }
+    }
+
     public void updataView() {
         updataView(mImgItems, mStringItems);
     }
@@ -423,8 +475,8 @@ public class Banner extends FrameLayout implements ViewPager.OnPageChangeListene
     }
 
     public void updataView(List imgItems, List<String> stringItems) {
-        this.mImgItems = imgItems;
-        this.mStringItems = stringItems;
+        setImgItems(imgItems);
+        setIndicatorStringItems(stringItems);
         select = 0;
         if (mLoopViewPager == null || mIndicator == null) {
             Log.d(TAG, "new create");
@@ -442,15 +494,13 @@ public class Banner extends FrameLayout implements ViewPager.OnPageChangeListene
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
-        if (mLoopViewPager != null) {
-            if (mLoopViewPager.isLoop() && mImgItems.size() > 1) {
-                int action = ev.getAction();
-                if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL
-                        || action == MotionEvent.ACTION_OUTSIDE) {
-                    mLoopViewPager.startLoop();
-                } else if (action == MotionEvent.ACTION_DOWN) {
-                    mLoopViewPager.stopLoop();
-                }
+        if (mLoopViewPager != null && mLoopViewPager.isLoop() && mImgItems.size() > 1) {
+            int action = ev.getAction();
+            if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL
+                    || action == MotionEvent.ACTION_OUTSIDE) {
+                mLoopViewPager.startLoop();
+            } else if (action == MotionEvent.ACTION_DOWN) {
+                mLoopViewPager.stopLoop();
             }
         }
         return super.dispatchTouchEvent(ev);

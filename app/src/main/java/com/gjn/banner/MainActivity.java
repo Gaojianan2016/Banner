@@ -56,7 +56,21 @@ public class MainActivity extends AppCompatActivity {
         }).setIndicatorMandatory(false)
                 .updataView(list, list2);
 
+        //修改imageview ScaleType
         banner.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        //停止自动轮播
+        banner.stop();
+        //设置PageClip
+        banner.setPageClip(true);
+        //修改item
+        banner.changeItemView(R.layout.itemview, new LoopViewPager.ChangeItemView() {
+            @Override
+            public void bindItemView(Context context, View view, Object img) {
+                ImageView imageView = view.findViewById(R.id.iv_itemview);
+                imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                Glide.with(context).load(img).into(imageView);
+            }
+        });
 
         findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -68,20 +82,21 @@ public class MainActivity extends AppCompatActivity {
                 switch (type) {
                     case 0:
                         banner.setIndicatorLoader(Banner.defaultImgIndicator(R.drawable.select));
-                        banner.setType(0);
+                        banner.setIndicatorType(0);
                         break;
                     case 1:
                         banner.setIndicatorLoader(Banner.defaultNumIndicator(0, Color.WHITE));
-                        banner.setType(1);
+                        banner.setIndicatorType(1);
                         break;
                     case 2:
                         banner.setIndicatorLoader(Banner.defaultTextIndicator(R.drawable.bg, Color.WHITE));
-                        banner.setType(2);
+                        banner.setIndicatorType(2);
                         break;
                     case 3:
                         banner.setIndicatorLoader(Banner.defaultImgIndicator(R.mipmap.homepage_banner_point02, R.mipmap.homepage_banner_point01));
-                        banner.setType(0);
+                        banner.setIndicatorType(0);
                         break;
+                    default:
                 }
             }
         });
