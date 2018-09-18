@@ -61,9 +61,9 @@ public class Banner extends FrameLayout implements ViewPager.OnPageChangeListene
     public Banner(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         View view = LayoutInflater.from(context).inflate(R.layout.banner, this, true);
-        mFrameLayout = view.findViewById(R.id.fl_banner);
         mViewPager = view.findViewById(R.id.vp_banner);
         mIndicatorLinearLayout = view.findViewById(R.id.ll_indicator_banner);
+        mFrameLayout = (FrameLayout) mViewPager.getParent();
     }
 
     public static BannerPointIndicatorLoader defaultImgIndicator(final int bgResid) {
