@@ -103,7 +103,7 @@ public abstract class LoopViewPager implements ViewPager.OnPageChangeListener {
         itemViewCount = itemViews.size();
     }
 
-    public void create() {
+    private void create() {
         if (items == null) {
             Log.e(TAG, "items is null.");
             return;

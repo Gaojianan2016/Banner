@@ -4,8 +4,11 @@ import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -76,27 +79,45 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 type++;
-                if (type > 3) {
+                if (type > 4) {
                     type = 0;
                 }
                 switch (type) {
                     case 0:
                         banner.setIndicatorLoader(Banner.defaultImgIndicator(R.drawable.select));
-                        banner.setIndicatorType(0);
+                        banner.changeIndicatorType(0);
                         break;
                     case 1:
-                        banner.setIndicatorLoader(Banner.defaultNumIndicator(0, Color.WHITE));
-                        banner.setIndicatorType(1);
+                        banner.setIndicatorLoader(Banner.defaultNumIndicator(0, Color.BLACK));
+                        banner.changeIndicatorType(1);
                         break;
                     case 2:
                         banner.setIndicatorLoader(Banner.defaultTextIndicator(R.drawable.bg, Color.WHITE));
-                        banner.setIndicatorType(2);
+                        banner.changeIndicatorType(2);
                         break;
                     case 3:
                         banner.setIndicatorLoader(Banner.defaultImgIndicator(R.mipmap.homepage_banner_point02, R.mipmap.homepage_banner_point01));
-                        banner.setIndicatorType(0);
+                        banner.changeIndicatorType(0);
+                        break;
+                    case 4:
+                        banner.setIndicatorLoader(new Banner.SimpleIndicatorLoader() {
+                            @Override
+                            public View createView(Context context, ViewGroup viewGroup) {
+                                return LayoutInflater.from(context).inflate(R.layout.indicator_item, viewGroup, false);
+                            }
+
+                            @Override
+                            public void setCustomView(View view, String title, int position) {
+                                TextView tvSize = view.findViewById(R.id.tv_size_ii);
+                                TextView tvTitle = view.findViewById(R.id.tv_title_ii);
+                                tvSize.setText((position + 1)+"/"+banner.getItemCount());
+                                tvTitle.setText(title);
+                            }
+                        });
+                        banner.changeIndicatorType(3);
                         break;
                     default:
+                        break;
                 }
             }
         });
