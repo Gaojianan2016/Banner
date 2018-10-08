@@ -104,7 +104,7 @@ public abstract class LoopViewPager implements ViewPager.OnPageChangeListener {
     }
 
     private void create() {
-        if (items == null) {
+        if (items == null || items.size() == 0) {
             Log.e(TAG, "items is null.");
             return;
         }

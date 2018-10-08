@@ -362,9 +362,6 @@ public class Banner extends FrameLayout implements ViewPager.OnPageChangeListene
 
     public Banner setImgItems(List imgs) {
         mImgItems = imgs == null ? new ArrayList() : imgs;
-        if (mLoopViewPager != null) {
-            mLoopViewPager.updataView(imgs);
-        }
         return this;
     }
 

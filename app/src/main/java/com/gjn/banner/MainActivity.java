@@ -139,5 +139,12 @@ public class MainActivity extends AppCompatActivity {
                 banner.updataView(list, list2);
             }
         });
+
+        findViewById(R.id.button4).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                banner.updataView(null);
+            }
+        });
     }
 }

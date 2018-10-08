@@ -13,7 +13,7 @@ allprojects {
 
 
 dependencies {
-    implementation 'com.github.Gaojianan2016:Banner:1.0.9'
+    implementation 'com.github.Gaojianan2016:Banner:1.1.0'
     implementation 'com.github.Gaojianan2016:IndicatorLayout:1.0.9'
 }
 ```
@@ -159,6 +159,13 @@ public class MainActivity extends AppCompatActivity {
                 list.add("http://ww1.sinaimg.cn/large/0065oQSqly1frjd77dt8zj30k80q2aga.jpg");
                 list2.add("页面" + list2.size());
                 banner.updataView(list, list2);
+            }
+        });
+
+        findViewById(R.id.button4).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                banner.updataView(null);
             }
         });
     }
