@@ -28,7 +28,7 @@ public abstract class LoopViewPager implements ViewPager.OnPageChangeListener {
     private ImageView.ScaleType scaleType = ImageView.ScaleType.CENTER_CROP;
     private List<View> itemViews = new ArrayList<>();
     private int itemViewCount = 0;
-    private int itemViewId = -1;
+    private int itemViewId = View.NO_ID;
     private ChangeItemView changeItemView;
     //监听相关
     private ViewPager.OnPageChangeListener onPageChangeListener;
@@ -59,7 +59,7 @@ public abstract class LoopViewPager implements ViewPager.OnPageChangeListener {
         //大于1需要设置头尾循环
         if (itemCount > 1) {
             for (int i = 0; i < itemCount + 2; i++) {
-                if (itemViewId != -1) {
+                if (itemViewId != View.NO_ID) {
                     View view = LayoutInflater.from(context).inflate(itemViewId, null);
                     Object img;
                     if (i == 0) {
@@ -87,7 +87,7 @@ public abstract class LoopViewPager implements ViewPager.OnPageChangeListener {
                 }
             }
         } else {
-            if (itemViewId != -1) {
+            if (itemViewId != View.NO_ID) {
                 View view = LayoutInflater.from(context).inflate(itemViewId, null);
                 Object img = items.get(0);
                 changeItemView.bindItemView(context, view, img);
@@ -112,7 +112,7 @@ public abstract class LoopViewPager implements ViewPager.OnPageChangeListener {
             Log.e(TAG, "viewPager is null.");
             return;
         }
-        if (itemViewId != -1 && changeItemView == null) {
+        if (itemViewId != View.NO_ID && changeItemView == null) {
             Log.e(TAG, "changeItemView is null.");
             return;
         }
@@ -193,6 +193,10 @@ public abstract class LoopViewPager implements ViewPager.OnPageChangeListener {
     public void setChangeItemView(int itemViewId, ChangeItemView changeItemView) {
         this.itemViewId = itemViewId;
         this.changeItemView = changeItemView;
+    }
+
+    public boolean isChangeItemView(){
+        return itemViewId != View.NO_ID;
     }
 
     public boolean isLoop() {

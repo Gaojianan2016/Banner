@@ -401,6 +401,9 @@ public class Banner extends FrameLayout implements ViewPager.OnPageChangeListene
     }
 
     public void setPageClip(boolean clip, int pageMargin, int margin) {
+        if (!clip) {
+            changeItemView(View.NO_ID, null);
+        }
         mFrameLayout.setClipChildren(!clip);
         mViewPager.setClipChildren(!clip);
         int width = (int) (getResources().getDisplayMetrics().density * margin);
@@ -419,6 +422,10 @@ public class Banner extends FrameLayout implements ViewPager.OnPageChangeListene
             mLoopViewPager.setChangeItemView(itemViewId, changeItemView);
             mLoopViewPager.updataView();
         }
+    }
+
+    public boolean isChangeItemView() {
+        return mLoopViewPager != null && mLoopViewPager.isChangeItemView();
     }
 
     public void updataView() {

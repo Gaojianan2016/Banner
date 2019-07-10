@@ -21,6 +21,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     int type = 0;
+    int sType = 0;
     private Banner banner;
     private List<String> list;
     private List<String> list2;
@@ -60,20 +61,9 @@ public class MainActivity extends AppCompatActivity {
                 .updataView(list, list2);
 
         //修改imageview ScaleType
-        banner.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        banner.setScaleType(ImageView.ScaleType.FIT_START);
         //停止自动轮播
         banner.stop();
-        //设置PageClip
-        banner.setPageClip(true);
-        //修改item
-        banner.changeItemView(R.layout.itemview, new LoopViewPager.ChangeItemView() {
-            @Override
-            public void bindItemView(Context context, View view, Object img) {
-                ImageView imageView = view.findViewById(R.id.iv_itemview);
-                imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                Glide.with(context).load(img).into(imageView);
-            }
-        });
 
         findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -144,6 +134,59 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 banner.updataView(null);
+            }
+        });
+
+        findViewById(R.id.button5).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sType++;
+                if (sType >= 6) {
+                    sType = 0;
+                }
+
+                switch (sType) {
+                    case 0:
+                        banner.setScaleType(ImageView.ScaleType.FIT_START);
+                        break;
+                    case 1:
+                        banner.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                        break;
+                    case 2:
+                        banner.setScaleType(ImageView.ScaleType.CENTER);
+                        break;
+                    case 3:
+                        banner.setScaleType(ImageView.ScaleType.FIT_XY);
+                        break;
+                    case 4:
+                        banner.setScaleType(ImageView.ScaleType.MATRIX);
+                        break;
+                    case 5:
+                        banner.setScaleType(ImageView.ScaleType.FIT_END);
+                        break;
+                }
+                banner.updataView();
+            }
+        });
+
+        findViewById(R.id.button6).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (banner.isChangeItemView()) {
+                    banner.setPageClip(false);
+                }else {
+                    //设置PageClip
+                    banner.setPageClip(true);
+                    //修改item
+                    banner.changeItemView(R.layout.itemview, new LoopViewPager.ChangeItemView() {
+                        @Override
+                        public void bindItemView(Context context, View view, Object img) {
+                            ImageView imageView = view.findViewById(R.id.iv_itemview);
+                            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                            Glide.with(context).load(img).into(imageView);
+                        }
+                    });
+                }
             }
         });
     }
